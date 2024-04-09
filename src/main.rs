@@ -1,7 +1,5 @@
-mod r#struct;
-mod basic;
-pub mod persist;
-
+pub mod basic;
+pub mod train_code;
 
 use std::cmp::Ordering;
 use std::fmt::Debug;
