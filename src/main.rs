@@ -1,5 +1,7 @@
 pub mod basic;
 pub mod train_code;
+pub mod smart_pointer;
+pub mod thread;
 
 use std::cmp::Ordering;
 use std::fmt::Debug;
