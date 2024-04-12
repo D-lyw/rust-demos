@@ -1,4 +1,4 @@
-workspace = { members = [ "algorithm", "apple", "async_program", "cmd","server", "web"] }
+workspace = { members = [ "algorithm", "apple", "async_program", "cmd", "mini_redis", "server", "web"] }
 [package]
 name = "rust-demo"
 version = "0.1.0"
@@ -7,6 +7,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+mini-redis = "0.4.1"
 num = "0.4.1"
 rand = "0.8.5"
 reqwest = "0.12.3"

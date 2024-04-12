@@ -188,7 +188,7 @@ mod tests {
 
        drop(ticket1);
 
-       let ticketLists: Vec<Ticket> = (0..10).map(|i| museum.get_ticket().unwrap()).collect();
+       let ticket_lists: Vec<Ticket> = (0..10).map(|i| museum.get_ticket().unwrap()).collect();
 
        assert!(museum.get_ticket().is_none());
        print!("--------------------------------")
