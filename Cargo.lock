@@ -702,6 +702,7 @@ dependencies = [
 name = "mini_redis_demo"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "env_logger",
  "log",
  "mini-redis",
