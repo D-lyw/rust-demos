@@ -8,6 +8,8 @@ use tokio::{
     net::{TcpListener, TcpStream},
 };
 
+// 可以使用 Dashmap 替换 HashMap，Dashmap 是一种线程安全的 HashMap
+// 使用 sled 替换 HashMap，实现持久化缓存数据
 type DB = Arc<Mutex<HashMap<String, Vec<u8>>>>;
 
 #[tokio::main]

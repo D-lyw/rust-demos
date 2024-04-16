@@ -1,4 +1,4 @@
-workspace = { members = [ "algorithm", "apple", "async_program", "cmd", "mini_redis", "server", "web"] }
+workspace = { members = [ "algorithm", "async_program", "cmd", "mini_redis", "project/kv", "project/lc", "project/pow", "project/v8", "server", "web"] }
 [package]
 name = "rust-demo"
 version = "0.1.0"
