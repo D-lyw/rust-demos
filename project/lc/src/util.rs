@@ -13,7 +13,7 @@ use walkdir::DirEntry;
 use crate::CodeLines;
 use owo_colors::OwoColorize;
 
-pub fn print_code_info(code_lines_map: MutexGuard<HashMap<&str, CodeLines>>) {
+pub fn print_code_info(code_lines_map: MutexGuard<HashMap<String, CodeLines>>) {
     let mut counter_info = vec![];
 
     let mut total_lines_info = CodeLines::new("Total".to_string());
@@ -44,7 +44,24 @@ pub fn print_code_info(code_lines_map: MutexGuard<HashMap<&str, CodeLines>>) {
     );
 }
 
-
 pub fn is_hidden_type_file(entry: &DirEntry) -> bool {
     entry.file_name().to_string_lossy().starts_with('.')
+}
+
+pub fn is_supported_file_type(entry: &DirEntry) -> bool {
+    let kind = match infer::get_from_path(entry.path()) {
+        Ok(Some(kind)) => kind,
+        Ok(None) => {
+            // infer crate not support this program language file type
+            return true;
+        },
+        Err(_) => return false,
+    };
+
+    // current only support count Text file type
+    if kind.matcher_type() == infer::MatcherType::Text {
+        return true;
+    }
+
+    false
 }
