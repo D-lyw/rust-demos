@@ -1,8 +1,18 @@
 [package]
-name = "kv"
+name = "snake"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[examples]]
+name = "test1"
+path = "examples/learn1.rs"
+
+[[example]]
+name = "test2"
+path = "examples/learn2.rs"
+
 [dependencies]
+bevy = "0.13.2"
+rand = "0.8.5"

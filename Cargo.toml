@@ -1,4 +1,15 @@
-workspace = { members = [ "algorithm", "async_program", "cmd", "mini_redis", "project/kv", "project/lc", "project/pow", "project/v8", "server", "web"] }
+workspace = { members = [
+    "algorithm",
+    "async_program",
+    "cmd",
+    "mini_redis",
+    "project/lc",
+    "project/pow",
+    "games/snake",
+    "project/v8",
+    "server",
+    "web", "games/breakout",
+] }
 [package]
 name = "rust-demo"
 version = "0.1.0"
@@ -14,4 +25,4 @@ reqwest = "0.12.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 server = { version = "0.1.0", path = "server" }
-tokio = { version = "1", features = ["sync"]}
+tokio = { version = "1", features = ["sync"] }
