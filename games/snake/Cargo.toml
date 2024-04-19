@@ -13,6 +13,10 @@ path = "examples/learn1.rs"
 name = "test2"
 path = "examples/learn2.rs"
 
+[[example]]
+name = "test3"
+path = "examples/learn3.rs"
+
 [dependencies]
 bevy = "0.13.2"
 rand = "0.8.5"
