@@ -1,7 +1,17 @@
+use std::time::Duration;
+
 use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
-    food::Food, BTimer, EatFood, GameScore, GameState, Position, ARENA_HEIGHT, ARENA_WIDTH,
+    food::Food,
+    BTimer,
+    EatFood,
+    GameScore,
+    GameState,
+    Position,
+    ARENA_HEIGHT,
+    ARENA_WIDTH,
+    // LAYER_GMAE,
 };
 
 #[derive(Component)]
@@ -52,16 +62,27 @@ impl Direction {
     }
 }
 
+struct SnakePlugin;
+
+impl Plugin for SnakePlugin {
+    fn build(&self, app: &mut App) {}
+}
+
 pub fn setup_snake(mut commands: Commands, mut segments: ResMut<SnakeSegments>) {
     *segments = SnakeSegments(vec![
         commands
-            .spawn(SpriteBundle {
-                sprite: Sprite {
-                    color: Color::hex("#ff6666").unwrap(),
+            .spawn((
+                SpriteBundle {
+                    sprite: Sprite {
+                        color: Color::hex("#ff6666").unwrap(),
+                        ..default()
+                    },
+                    transform: Transform::from_xyz(0.0, 0.0, 20.0),
+                    // render_layers: LAYER_GMAE
                     ..default()
                 },
-                ..default()
-            })
+                // LAYER_GMAE,
+            ))
             .insert(SnakeHead {
                 direction: Direction::Up,
             })
@@ -75,16 +96,20 @@ pub fn setup_snake(mut commands: Commands, mut segments: ResMut<SnakeSegments>) 
 
 pub fn spawn_segment(mut commands: Commands, position: Position) -> Entity {
     commands
-        .spawn(SpriteBundle {
-            sprite: Sprite {
-                color: Color::hex("ff9966").unwrap(),
+        .spawn((
+            SpriteBundle {
+                sprite: Sprite {
+                    color: Color::hex("ff9966").unwrap(),
+                    ..default()
+                },
+                transform: Transform::from_xyz(0.0, 0.0, 20.0),
                 ..default()
             },
-            ..default()
-        })
+            // LAYER_GMAE,
+        ))
         .insert(SnakeSegment)
         .insert(position)
-        .insert(Size::square(0.92))
+        .insert(Size::square(0.9))
         .id()
 }
 
@@ -124,10 +149,11 @@ pub fn move_snake(
             }
         };
 
+        // println!("{:?}", head_pos);
         // out of game bounds check
         if head_pos.x < 0.0
             || head_pos.x >= ARENA_WIDTH as f32
-            || head_pos.y < 0.
+            || head_pos.y < 0.0
             || head_pos.y >= ARENA_HEIGHT as f32
             || segment_positions.contains(&head_pos)
         {
@@ -162,8 +188,8 @@ pub fn transform_position(
     for (position, mut transform) in pos.iter_mut() {
         transform.translation = Vec3::new(
             calculate_transform(position.x, window.width(), ARENA_WIDTH as f32),
-            calculate_transform(position.y, window.height(), ARENA_HEIGHT as f32),
-            0.0,
+            calculate_transform(position.y, window.width(), ARENA_WIDTH as f32) - 25.0,
+            20.0,
         );
     }
 }
@@ -174,6 +200,7 @@ pub fn snake_eating(
     foods_position: Query<(Entity, &Position), With<Food>>,
     header: Query<&Position, With<SnakeHead>>,
     mut game_score: ResMut<GameScore>,
+    mut move_speed: ResMut<BTimer>,
 ) {
     let head_pos = header.get_single().unwrap();
     for (food_entity, food_pos) in foods_position.iter() {
@@ -181,6 +208,13 @@ pub fn snake_eating(
             commands.entity(food_entity).despawn_recursive();
             food_events.send(EatFood);
             game_score.score += 1;
+
+            if game_score.score % 5 == 0 && game_score.score != 0 {
+                game_score.speed += 2.0;
+                move_speed
+                    .0
+                    .set_duration(Duration::from_secs_f32(1.0 / game_score.speed));
+            }
         }
     }
 }

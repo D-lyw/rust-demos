@@ -1,15 +1,25 @@
 pub mod food;
+pub mod lifetime;
 pub mod snake;
 pub mod ui;
+
 use bevy::prelude::Query;
-use bevy::window::{PrimaryWindow, WindowResolution};
-use bevy::{app::AppExit, prelude::*};
+use bevy::prelude::*;
+use bevy::render::view::RenderLayers;
+use bevy::window::WindowResolution;
 use food::{spawn_foods, Food, FoodSpawnTimer};
-use snake::{handle_snake_growing, move_snake, setup_snake, snake_eating, spawn_segment, transform_position, Direction, LastTailPosition, Size, SnakeHead, SnakeSegments};
-use ui::{render_result_ui, ResultNode};
+use lifetime::{GameScore, LifetimePlugin};
+use snake::{
+    handle_snake_growing, move_snake, setup_snake, snake_eating, spawn_segment, transform_position,
+    Direction, LastTailPosition, Size, SnakeHead, SnakeSegments,
+};
+use ui::{render_layout, render_result_ui, ResultNode};
 
 const ARENA_WIDTH: usize = 25;
 const ARENA_HEIGHT: usize = 25;
+
+// const LAYER_UI: RenderLayers = RenderLayers::layer(0);
+// const LAYER_GMAE: RenderLayers = RenderLayers::layer(1);
 
 #[derive(States, Debug, Hash, Copy, Clone, Default, PartialEq, Eq)]
 pub enum GameState {
@@ -19,15 +29,10 @@ pub enum GameState {
     GameOver,
 }
 
-#[derive(Resource, Debug, Hash, Copy, Clone, Default, PartialEq)]
-pub struct GameScore {
-    score: i32,
-}
-
 #[derive(Event)]
 pub struct EatFood;
 
-#[derive(Component, Clone, Copy, PartialEq)]
+#[derive(Component, Clone, Copy, PartialEq, Debug)]
 pub struct Position {
     x: f32,
     y: f32,
@@ -47,18 +52,18 @@ fn main() {
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Snake Playground".to_string(),
-                resolution: WindowResolution::new(800.0, 800.0),
+                resolution: WindowResolution::new(800.0, 850.0),
                 ..Default::default()
             }),
             ..default()
         }))
+        .add_plugins(LifetimePlugin)
         .insert_resource(ClearColor(Color::hex("003366").unwrap()))
         .insert_resource(BTimer(Timer::from_seconds(0.2, TimerMode::Repeating)))
         .insert_resource(FoodSpawnTimer(Timer::from_seconds(
             2.0,
             TimerMode::Repeating,
         )))
-        .insert_resource(GameScore { score: 0 })
         .insert_resource(SnakeSegments::default())
         .insert_resource(LastTailPosition::default())
         .init_state::<GameState>()
@@ -92,6 +97,7 @@ fn main() {
 
 fn setup_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
+    render_layout(commands);
 }
 
 fn snake_movement_input(
@@ -138,8 +144,8 @@ fn size_scaling(
     for (sprite_size, mut transform) in q.iter_mut() {
         transform.scale = Vec3::new(
             sprite_size.width / ARENA_WIDTH as f32 * window.width() as f32,
-            sprite_size.height / ARENA_HEIGHT as f32 * window.height() as f32,
-            1.0,
+            sprite_size.height / ARENA_WIDTH as f32 * window.height() as f32,
+            20.0,
         );
     }
 }
