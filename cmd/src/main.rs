@@ -1,51 +1,35 @@
-mod password_generate;
-use clap::{value_parser, Parser, Subcommand};
+use anyhow::Result;
+use clap::Parser;
+use cmd::{get_reader, handle_text_sign, password_generate, CliApp};
+use base64::prelude::*;
 
-use password_generate::password_generate;
+fn main() -> Result<()> {
+    let cli = CliApp::parse();
 
-#[derive(Parser, Debug)]
-#[command(version, about = "some command line utilities")]
-struct Args {
-    #[command(subcommand)]
-    command: Option<Commands>,
-}
-
-#[derive(Subcommand, Debug)]
-enum Commands {
-    // password generate
-    #[command(name = "pass-generate", about = "generate password")]
-    PassGenerate(PassGenerateOption),
-}
-
-#[derive(Parser, Debug)]
-struct PassGenerateOption {
-    #[arg(short, long, default_value_t = 16, value_parser = value_parser!(u8).range(6..))]
-    length: u8,
-    #[arg(long, default_value_t = true)]
-    number: bool,
-    #[arg(long, default_value_t = true)]
-    lowercase: bool,
-    #[arg(long, default_value_t = true)]
-    symbol: bool,
-    #[arg(long, default_value_t = true)]
-    uppercase: bool,
-}
-
-fn main() {
-    let cli = Args::parse();
-
-    match &cli.command {
-        Some(Commands::PassGenerate(options)) => {
-            password_generate(
+    match cli.command {
+        cmd::SubCommand::PassGenerate(options) => {
+            let pass = password_generate(
                 options.length,
                 options.number,
+                options.uppercase,
                 options.lowercase,
                 options.symbol,
-                options.uppercase,
-            );
+            )?;
+            println!("{}", pass);
         }
-        _ => {
-            println!("other");
-        }
+        cmd::SubCommand::Text(text_subcommand) => match text_subcommand {
+            cmd::text::TextSubCommands::Sign(sign_opts) => {
+                // handle input from stdin or file
+                let mut reader = get_reader(&sign_opts.input)?;
+                // get key content
+                let key_content = cmd::get_key_content(&sign_opts.key)?;
+                // handle text sign
+                let signature = handle_text_sign(&mut reader, key_content, sign_opts.format)?;
+                println!("{}", BASE64_STANDARD.encode(&signature));
+            }
+            cmd::text::TextSubCommands::Verify(verify_opts) => {}
+        },
     }
+
+    Ok(())
 }

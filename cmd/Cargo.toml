@@ -10,3 +10,6 @@ clap = { version = "4.5.4", features = ["derive"] }
 rand = "0.8.5"
 anyhow = "1.0.82"
 zxcvbn = '2.2.2'
+blake3 = "1.5.1"
+ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
+base64 = "0.22.0"

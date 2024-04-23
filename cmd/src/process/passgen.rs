@@ -1,7 +1,14 @@
+use anyhow::Error;
 use rand::seq::SliceRandom;
 use rand::{thread_rng, Rng};
 
-pub fn password_generate(length: u8, number: bool, uppercase: bool, lowercase: bool, symbol: bool) {
+pub fn password_generate(
+    length: u8,
+    number: bool,
+    uppercase: bool,
+    lowercase: bool,
+    symbol: bool,
+) -> Result<String, Error> {
     let mut password = Vec::new();
     let mut chars = Vec::new();
     if number {
@@ -35,5 +42,6 @@ pub fn password_generate(length: u8, number: bool, uppercase: bool, lowercase: b
         password.push(chars[thread_rng().gen_range(0..chars.len())]);
     }
     password.shuffle(&mut thread_rng());
-    println!("{}", String::from_iter(password));
+
+    Ok(String::from_iter(password))
 }
