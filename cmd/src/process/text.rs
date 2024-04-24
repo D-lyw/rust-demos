@@ -98,3 +98,12 @@ pub fn handle_text_verify(text: &mut dyn Read, key: Vec<u8>, format: TextSignFor
 
     verifier.verify(text, &sig)
 }
+
+
+pub fn handle_text_encrypt(text: &mut dyn Read, key: Vec<u8>) -> Result<Vec<u8>> {
+    let mut buf = Vec::new();
+    text.read_to_end(&mut buf)?;
+
+    
+    Ok(buf)
+}

@@ -12,16 +12,28 @@ pub enum TextSubCommands {
     Sign(SignOpts),
     #[command(about = "verify text")]
     Verify(VerifyOpts),
+
+    #[command(about = "encrypt text")]
+    Encrypt(EncryptOpts),
+    #[command(about = "decrypt text")]
+    Decrypt(DecryptOpts),
 }
 
-// impl CommandExecutor for TextSubCommands {
-//     async fn execute(self) -> anyhow::Result<()> {
-//         match self {
-//             TextSubCommands::Sign(opts) => opts.execute().await,
-//             TextSubCommands::Verify(opts) => opts.execute().await,
-//         }
-//     }
-// }
+#[derive(Parser, Debug)]
+pub struct EncryptOpts {
+    #[arg(short, long, default_value = "-", value_parser = verify_file)]
+    pub input: String,
+    #[arg(short, long, value_parser = verify_file)]
+    pub key: String,
+}
+
+#[derive(Parser, Debug)]
+pub struct DecryptOpts {
+    #[arg(short, long, default_value = "-", value_parser = verify_file)]
+    pub input: String,
+    #[arg(short, long, value_parser = verify_file)]
+    pub key: String, 
+}
 
 #[derive(Debug, Parser)]
 pub struct SignOpts {
@@ -33,15 +45,7 @@ pub struct SignOpts {
     pub format: TextSignFormat,
 }
 
-impl CommandExecutor for SignOpts {
-    async fn execute(self) -> anyhow::Result<()> {
-        let mut reader = get_reader(&self.input)?;
-        let key_content = get_key_content(&self.key)?;
-        let signature = handle_text_sign(&mut reader, key_content, self.format)?;
-        println!("{}", BASE64_STANDARD.encode(&signature));
-        Ok(())
-    }
-}
+
 
 #[derive(Debug, Parser)]
 pub struct VerifyOpts {
@@ -55,20 +59,6 @@ pub struct VerifyOpts {
     pub signature: String,
 }
 
-impl CommandExecutor for VerifyOpts {
-    async fn execute(self) -> anyhow::Result<()> {
-        let mut reader = get_reader(&self.input)?;
-        let key_content = get_key_content(&self.key)?;
-        let result = handle_text_verify(
-            &mut reader,
-            key_content,
-            self.format,
-            BASE64_STANDARD.decode(&self.signature)?,
-        )?;
-        println!("{}", result);
-        Ok(())
-    }
-}
 
 #[derive(Debug, Clone, Copy)]
 pub enum TextSignFormat {
@@ -93,5 +83,30 @@ pub fn verify_file(filename: &str) -> Result<String, &'static str> {
         Ok(filename.into())
     } else {
         Err("File does not exist")
+    }
+}
+
+impl CommandExecutor for SignOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let mut reader = get_reader(&self.input)?;
+        let key_content = get_key_content(&self.key)?;
+        let signature = handle_text_sign(&mut reader, key_content, self.format)?;
+        println!("{}", BASE64_STANDARD.encode(&signature));
+        Ok(())
+    }
+}
+
+impl CommandExecutor for VerifyOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let mut reader = get_reader(&self.input)?;
+        let key_content = get_key_content(&self.key)?;
+        let result = handle_text_verify(
+            &mut reader,
+            key_content,
+            self.format,
+            BASE64_STANDARD.decode(&self.signature)?,
+        )?;
+        println!("{}", result);
+        Ok(())
     }
 }
