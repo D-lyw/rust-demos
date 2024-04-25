@@ -1,8 +1,9 @@
 use clap::Parser;
 use enum_dispatch::enum_dispatch;
 
-use self::{passgen::PassGenerateOpts, text::TextSubCommands};
+use self::{jwt::JwtSubComand, passgen::PassGenerateOpts, text::TextSubCommands};
 
+pub mod jwt;
 pub mod passgen;
 pub mod text;
 
@@ -23,6 +24,10 @@ pub enum SubCommand {
     // sign and verify text
     #[command(subcommand, name = "text", about = "sign and verify text")]
     Text(TextSubCommands),
+
+    // generate and verify jwt
+    #[command(subcommand, name = "jwt", about = "generate and verify jwt")]
+    Jwt(JwtSubComand),
 }
 
 // impl CommandExecutor for SubCommand {

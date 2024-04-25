@@ -8,6 +8,7 @@ pub use process::*;
 pub use utils::*;
 pub use text::*;
 pub use passgen::*;
+pub use jwt::*;
 
 #[allow(async_fn_in_trait)]
 #[enum_dispatch]
