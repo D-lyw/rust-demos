@@ -3,7 +3,9 @@ use clap::Parser;
 use enum_dispatch::enum_dispatch;
 use std::{path::PathBuf, str::FromStr};
 
-use crate::{get_key_content, get_reader, handle_text_sign, handle_text_verify, CommandExecutor};
+use crate::{
+    get_key_content, get_reader, handle_text_decrypt, handle_text_encrypt, handle_text_sign, handle_text_verify, CommandExecutor
+};
 
 #[derive(Debug, Parser)]
 #[enum_dispatch(CommandExecutor)]
@@ -25,6 +27,8 @@ pub struct EncryptOpts {
     pub input: String,
     #[arg(short, long, value_parser = verify_file)]
     pub key: String,
+    #[arg(long, help = ">= 12 bytes as encrypt and decrypt nonce")]
+    pub nonce: String,
 }
 
 #[derive(Parser, Debug)]
@@ -32,7 +36,9 @@ pub struct DecryptOpts {
     #[arg(short, long, default_value = "-", value_parser = verify_file)]
     pub input: String,
     #[arg(short, long, value_parser = verify_file)]
-    pub key: String, 
+    pub key: String,
+    #[arg(long, help = ">= 12 bytes as encrypt and decrypt nonce")]
+    pub nonce: String,
 }
 
 #[derive(Debug, Parser)]
@@ -45,8 +51,6 @@ pub struct SignOpts {
     pub format: TextSignFormat,
 }
 
-
-
 #[derive(Debug, Parser)]
 pub struct VerifyOpts {
     #[arg(short, long, default_value = "-", value_parser = verify_file)]
@@ -58,7 +62,6 @@ pub struct VerifyOpts {
     #[arg(long)]
     pub signature: String,
 }
-
 
 #[derive(Debug, Clone, Copy)]
 pub enum TextSignFormat {
@@ -107,6 +110,30 @@ impl CommandExecutor for VerifyOpts {
             BASE64_STANDARD.decode(&self.signature)?,
         )?;
         println!("{}", result);
+        Ok(())
+    }
+}
+
+impl CommandExecutor for EncryptOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let mut reader = get_reader(&self.input)?;
+        let key_content = get_key_content(&self.key)?;
+        let result = handle_text_encrypt(&mut reader, key_content, self.nonce.into_bytes())?;
+
+        println!("{}", BASE64_STANDARD.encode(result));
+
+        Ok(())
+    }
+}
+
+impl CommandExecutor for DecryptOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let mut reader = get_reader(&self.input)?;
+        let key_content = get_key_content(&self.key)?;
+        let result = handle_text_decrypt(&mut reader, key_content, self.nonce.into_bytes())?;
+
+        println!("{}", String::from_utf8_lossy(&result));
+
         Ok(())
     }
 }

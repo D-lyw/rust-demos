@@ -15,3 +15,4 @@ ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
 base64 = "0.22.0"
 tokio = { version = "1.37.0", features = ["rt", "macros", "rt-multi-thread"] }
 enum_dispatch = "0.3.13"
+ring = "0.17.8"

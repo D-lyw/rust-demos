@@ -1,3 +1,5 @@
+use base64::prelude::*;
+use ring::aead;
 use std::io::Read;
 
 use crate::{text::TextSignFormat, vec_to_array};
@@ -11,6 +13,65 @@ pub trait TextSigner {
 
 pub trait TextVerifyer {
     fn verify(&self, render: &mut dyn Read, signature: &[u8]) -> Result<bool>;
+}
+
+pub trait TextEncrypt {
+    fn encrypt(&self, render: &mut dyn Read) -> Result<Vec<u8>>;
+}
+
+pub trait TextDecrypt {
+    fn decrypt(&self, render: &mut dyn Read) -> Result<Vec<u8>>;
+}
+
+struct TextAEAD {
+    key: [u8; 32],
+    nonce: [u8; 12],
+}
+
+impl TextAEAD {
+    fn new(key: [u8; 32], nonce: [u8; 12]) -> Self {
+        Self { key, nonce }
+    }
+}
+
+impl TextEncrypt for TextAEAD {
+    fn encrypt(&self, render: &mut dyn Read) -> Result<Vec<u8>> {
+        let mut data = Vec::new();
+        render.read_to_end(&mut data)?;
+
+        let key = aead::UnboundKey::new(&aead::CHACHA20_POLY1305, self.key.as_slice()).unwrap();
+        let key = aead::LessSafeKey::new(key);
+
+        key.seal_in_place_append_tag(
+            aead::Nonce::assume_unique_for_key(self.nonce),
+            aead::Aad::empty(),
+            &mut data,
+        )
+        .unwrap();
+
+        Ok(data)
+    }
+}
+
+impl TextDecrypt for TextAEAD {
+    fn decrypt(&self, render: &mut dyn Read) -> Result<Vec<u8>> {
+        let mut data = Vec::new();
+        render.read_to_end(&mut data)?;
+
+        let mut data = BASE64_STANDARD.decode(&mut data)?;
+
+        let key = aead::UnboundKey::new(&aead::CHACHA20_POLY1305, self.key.as_slice()).unwrap();
+        let key = aead::LessSafeKey::new(key);
+
+        key.open_in_place(
+            aead::Nonce::assume_unique_for_key(self.nonce),
+            aead::Aad::empty(),
+            &mut data,
+        )
+        .unwrap();
+
+        Ok(data)
+    }
 }
 
 struct Blake3 {
@@ -90,7 +151,12 @@ pub fn handle_text_sign(
     signer.sign(text)
 }
 
-pub fn handle_text_verify(text: &mut dyn Read, key: Vec<u8>, format: TextSignFormat, sig: Vec<u8>) -> Result<bool> {
+pub fn handle_text_verify(
+    text: &mut dyn Read,
+    key: Vec<u8>,
+    format: TextSignFormat,
+    sig: Vec<u8>,
+) -> Result<bool> {
     let verifier: Box<dyn TextVerifyer> = match format {
         TextSignFormat::Blake3 => Box::new(Blake3::new(vec_to_array(key))),
         TextSignFormat::Ed25519 => Box::new(Ed25519::try_new(key)?),
@@ -99,11 +165,20 @@ pub fn handle_text_verify(text: &mut dyn Read, key: Vec<u8>, format: TextSignFor
     verifier.verify(text, &sig)
 }
 
+pub fn handle_text_encrypt(text: &mut dyn Read, key: Vec<u8>, nonce: Vec<u8>) -> Result<Vec<u8>> {
+    let key: [u8; 32] = vec_to_array(key);
+    let mut _nonce: [u8; 12] = [0; 12];
+    _nonce.copy_from_slice(&nonce);
+    let aead = TextAEAD::new(key, _nonce);
 
-pub fn handle_text_encrypt(text: &mut dyn Read, key: Vec<u8>) -> Result<Vec<u8>> {
-    let mut buf = Vec::new();
-    text.read_to_end(&mut buf)?;
+    aead.encrypt(text)
+}
 
-    
-    Ok(buf)
+pub fn handle_text_decrypt(text: &mut dyn Read, key: Vec<u8>, nonce: Vec<u8>) -> Result<Vec<u8>> {
+    let key: [u8; 32] = vec_to_array(key);
+    let mut _nonce: [u8; 12] = [0; 12];
+    _nonce.copy_from_slice(&nonce);
+    let aead = TextAEAD::new(key, _nonce);
+
+    aead.decrypt(text)
 }
