@@ -27,10 +27,10 @@ pub fn try_self_referential_struct() {
         b: &'a String,
     }
     let a = String::from("Hello");
-    let test = Test {
-        a,
-        b: &a,
-    };
+    // let test = Test {
+    //     a,
+    //     b: &a,
+    // };
 
 }
 

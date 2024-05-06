@@ -1,4 +1,5 @@
 pub mod pin;
+pub mod matrix;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right

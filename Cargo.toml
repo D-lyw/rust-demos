@@ -1,6 +1,6 @@
 workspace = { members = [
     "algorithm",
-    "async_program",
+    "concurrency_async",
     "cmd",
     "mini_redis",
     "project/lc",
@@ -8,7 +8,7 @@ workspace = { members = [
     "games/snake",
     "project/v8",
     "server",
-    "web", "games/breakout",
+    "games/breakout", "web/first",
 ] }
 [package]
 name = "rust-demo"

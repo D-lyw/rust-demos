@@ -1,0 +1,12 @@
+
+### hello request
+
+http://localhost:3000
+
+### file dir request
+http://localhost:3000/static/test.txt
+
+
+### params query request
+
+http://localhost:3000/query?age=123&name=zhangsan&address=abc

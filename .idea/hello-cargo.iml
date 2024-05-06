@@ -7,6 +7,18 @@
       <sourceFolder url="file://$MODULE_DIR$/server/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/apple/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/algorithm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/async_program/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/games/breakout/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/games/snake/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/games/snake/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/mini_redis/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/mini_redis/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/project/lc/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/project/pow/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/project/v8/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/project/v8/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/web/first/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
