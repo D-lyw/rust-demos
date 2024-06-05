@@ -8,11 +8,13 @@ use axum::{
 use serde::Deserialize;
 use tokio::net::TcpListener;
 use tower_http::{services::ServeDir, trace::TraceLayer};
-use tracing::info;
+use tracing::{debug, event, info, instrument, Level};
+use tracing_subscriber::fmt::writer::MakeWriterExt;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt::init();
+    let log_appender = tracing_appender::rolling::hourly(".", "log").with_max_level(Level::TRACE);
+    tracing_subscriber::fmt().with_writer(log_appender).init();
 
     let app = Router::new()
         .route("/", get(root_handler))
@@ -27,9 +29,11 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+#[instrument]
 async fn root_handler() -> Html<&'static str> {
     info!("Hanlde request root handler");
-
+    debug!("hello! I'm gonna shave a yak.");
+    event!(Level::INFO, "inside my_function!");
     Html(r#"<h1>Hello, world!</h1>"#)
 }
 

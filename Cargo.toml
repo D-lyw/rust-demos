@@ -8,7 +8,8 @@ workspace = { members = [
     "games/snake",
     "project/v8",
     "server",
-    "games/breakout", "web/first",
+    "games/breakout",
+    "web/first", "web/url_shortenr",
 ] }
 [package]
 name = "rust-demo"
@@ -26,3 +27,5 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 server = { version = "0.1.0", path = "server" }
 tokio = { version = "1", features = ["sync"] }
+tracing = '0.1.40'
+tracing-subscriber = "0.3.18"

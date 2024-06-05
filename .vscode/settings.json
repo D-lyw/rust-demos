@@ -1,5 +1,19 @@
 {
   "rust-analyzer.linkedProjects": [
     "./algorithm/Cargo.toml",
+  ],
+  "sqltools.connections": [
+    {
+      "pgOptions": {
+        "ssl": {
+          "rejectUnauthorized": true
+        }
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "Vercel",
+      "connectString": "postgres://default:e9yE7CAMaYIk@ep-shiny-wildflower-a1brpvkz.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+    }
   ]
 }
