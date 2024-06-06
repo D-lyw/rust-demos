@@ -1,3 +1,5 @@
+use std::env;
+
 use anyhow::Result;
 use axum::{
     extract::Path,
@@ -11,6 +13,7 @@ use serde_json::json;
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 use tracing::info;
+use dotenv::dotenv;
 
 const SERVICE_ADDR: &str = "127.0.0.1:3001";
 
@@ -18,7 +21,9 @@ const SERVICE_ADDR: &str = "127.0.0.1:3001";
 async fn main() -> Result<()> {
     tracing_subscriber::fmt().init();
 
-    let pool = PgPoolOptions::new().connect("postgres://default:e9yE7CAMaYIk@ep-shiny-wildflower-a1brpvkz.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require").await?;
+    dotenv().ok();
+    println!("{:?}", env::var("DATABASE_URL"));
+    let pool = PgPoolOptions::new().connect(&env::var("DATABASE_URL")?).await?;
 
     let app = Router::new()
         .route("/ping", get(service_ping))
