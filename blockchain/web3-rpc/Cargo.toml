@@ -1,0 +1,28 @@
+[package]
+name = "web3-rpc"
+version = "0.1.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+alloy = { git = "https://github.com/alloy-rs/alloy", version = "0.1.0", features = [
+    "full",
+    "node-bindings",
+    "rpc-types-trace",
+    "signer-aws",
+    "signer-keystore",
+    "signer-ledger",
+    "signer-mnemonic",
+    "signer-trezor",
+    "signer-yubihsm",
+] }
+anyhow = "1.0.86"
+revm = "9"
+tokio = { version = "1.38.0", features = ["macros", "rt-multi-thread"] }
+web3 = "0.19.0"
+jsonrpsee = { version = "0.23.1", features = [
+    "client",
+    "macros",
+    "http-client",
+] }

@@ -4,12 +4,11 @@ workspace = { members = [
     "cmd",
     "mini_redis",
     "project/lc",
-    "project/pow",
     "games/snake",
     "project/v8",
     "server",
     "games/breakout",
-    "web/first", "web/url_shortenr",
+    "web/first", "web/url_shortenr", "blockchain/web3-rpc",
 ] }
 [package]
 name = "rust-demo"
