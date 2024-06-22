@@ -2909,7 +2909,9 @@ name = "concurrency_async"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "futures",
  "oneshot",
+ "tokio",
 ]
 
 [[package]]
