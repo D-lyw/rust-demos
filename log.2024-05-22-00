@@ -1,7 +1,0 @@
-[2m2024-05-22T00:49:29.351329Z[0m [32m INFO[0m [2mfirst[0m[2m:[0m Hanlde request root handler
-[2m2024-05-22T00:49:35.991546Z[0m [32m INFO[0m [2mfirst[0m[2m:[0m ParamsStruct { name: "zhangsan", age: 123, address: Some("abc") }
-[2m2024-05-22T00:49:44.895554Z[0m [32m INFO[0m [2mfirst[0m[2m:[0m ParamsStruct { name: "zhangsan", age: 123, address: Some("abc") }
-[2m2024-05-22T00:51:04.213057Z[0m [32m INFO[0m [2mfirst[0m[2m:[0m Hanlde request root handler
-[2m2024-05-22T00:52:32.233088Z[0m [32m INFO[0m [1mroot_handler[0m[2m:[0m [2mfirst[0m[2m:[0m Hanlde request root handler
-[2m2024-05-22T00:52:33.499725Z[0m [32m INFO[0m [1mroot_handler[0m[2m:[0m [2mfirst[0m[2m:[0m Hanlde request root handler
-[2m2024-05-22T00:52:33.944405Z[0m [32m INFO[0m [1mroot_handler[0m[2m:[0m [2mfirst[0m[2m:[0m Hanlde request root handler
