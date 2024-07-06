@@ -8,6 +8,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = { workspace = true }
+thiserror = { workspace = true }
 axum = "0.7.5"
 dotenv = "0.15.0"
 nanoid = "0.4.0"
