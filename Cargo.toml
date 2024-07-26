@@ -13,7 +13,8 @@ members = [
     "web/url_shortenr",
     "blockchain/web3-rpc",
     "playground"
-]
+, "project/repl"]
+resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [workspace.dependencies]
