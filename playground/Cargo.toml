@@ -6,10 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+alloy = { version = "0.2.0", features = ["full"] }
 anyhow = { workspace = true }
 crossbeam-channel = "0.5.13"
 mini-redis = "0.4.1"
 num = "0.4.1"
+oneshot = { version = "0.1.8", features = ["async"] }
 rand = "0.8.5"
 reqwest = "0.12.3"
 serde = { version = "1.0", features = ["derive"] }

@@ -1,32 +1,25 @@
-// use revm::{ db::{CacheDB, EmptyDB}, Evm};
-
-// fn main() {
-//     // create a blockchain transaction and execute by revm 
-
-//     let mut cache_db = CacheDB::new(EmptyDB::default());
-
-
-//     let mut evm = Evm::builder().build();
-
-//     // evm.transact()
-
-// }
-
+use alloy::{providers::Provider, sol};
 use tokio;
-use web3;
+use web3_rpc::{init_ws_rpc_server, subscribe_event_logs, subscribe_usdt_transfer};
+
+sol!(
+    #[allow(missing_docs)]
+    #[sol(rpc)]
+    IWETH,
+    "examples/abi/weth.json"
+);
 
 #[tokio::main]
-async fn main() -> web3::Result {
-    // let transport = web3::transports::Http::new("https://sepolia.infura.io/v3/2e1e3366832e41368179dc9e08156d85")?;
-    
-    let transport = web3::transports::Http::new("http://127.0.0.1:8545")?;
-    let _web3 = web3::Web3::new(transport);
+async fn main() -> anyhow::Result<()> {
+    let ws_server = init_ws_rpc_server().await?;
+    println!("Latest block: {}", ws_server.get_block_number().await?);
 
-    let accounts = _web3.eth().accounts().await?;
-    for _account in accounts {
-        println!("Account: {:?}", _account);
-    }
+    // subscribe_blocks(&ws_server).await?;
+    // subscribe_event_logs(&ws_server).await?;
+    subscribe_usdt_transfer(&ws_server).await?;
 
-    println!("Current block: {}", _web3.eth().block_number().await?);
+    // let contract = IWETH::new("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".parse()?, ws_server);
+    // let IWETH::totalSupplyReturn { _0 } = contract.totalSupply().call().await?;
+    // println!("WETH total supply: {:?}", _0);
     Ok(())
 }
