@@ -1,5 +1,5 @@
 use std::str::FromStr;
-
+use tokio;
 use alloy::{
     eips::BlockNumberOrTag,
     primitives::{
@@ -61,20 +61,31 @@ pub async fn subscribe_usdt_transfer(server: &RootProvider<PubSubFrontend>) -> a
 
     let mut log_stream = sub.into_stream();
     while let Some::<Log>(log) = log_stream.next().await {
-        let log_data = log.inner.data;
-        let transfer_amount = U256::from_str(&log_data.data.to_string())?;
-        let transfer_from = log_data.topics()[1];
-        let transfer_to = log_data.topics()[2];
-        let min_transfer_amount: U256 = parse_units("1000", 6)?.into();
-
-        if transfer_amount >= min_transfer_amount {
-            println!(
-                "Transfer {:?} USDT from: {:?} to {:?}",
-                format_units(transfer_amount, 6)?,
-                Address::from_word(transfer_from),
-                Address::from_word(transfer_to)
-            );
-        }
+        tokio::spawn(async move {
+            if let Err(e) = process_transfer_log(log).await {
+                eprintln!("Process transfer log error: {:?}", e);
+            }
+        });
     }
+
+    Ok(())
+}
+
+pub async fn process_transfer_log(log: Log) -> anyhow::Result<()> {
+    let log_data = log.inner.data;
+    let transfer_amount = U256::from_str(&log_data.data.to_string())?;
+    let transfer_from = log_data.topics()[1];
+    let transfer_to = log_data.topics()[2];
+    let min_transfer_amount: U256 = parse_units("10000", 6)?.into();
+
+    if transfer_amount >= min_transfer_amount {
+        println!(
+            "Transfer {:?} USDT from: {:?} to {:?}",
+            format_units(transfer_amount, 6)?,
+            Address::from_word(transfer_from),
+            Address::from_word(transfer_to)
+        );
+    }
+
     Ok(())
 }
