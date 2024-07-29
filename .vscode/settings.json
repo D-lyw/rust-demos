@@ -2,6 +2,7 @@
   "rust-analyzer.linkedProjects": [
     "./algorithm/Cargo.toml",
   ],
+  // "rust-analyzer.procMacro.enable": true,
   "sqltools.connections": [
     {
       "pgOptions": {
