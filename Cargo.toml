@@ -12,8 +12,10 @@ members = [
     "web/first",
     "web/url_shortenr",
     "blockchain/web3-rpc",
-    "playground"
-, "project/repl"]
+    "wasm/wasm-pack-learn",
+    "playground",
+    "project/repl",
+]
 resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -23,7 +25,7 @@ thiserror = "1.0.61"
 mini-redis = "0.4.1"
 num = "0.4.1"
 rand = "0.8.5"
-reqwest = "0.12.3"
+reqwest = { version = "0.12.5", features = ["blocking"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 server = { version = "0.1.0", path = "server" }

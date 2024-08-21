@@ -1,0 +1,42 @@
+# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+
+# 忽略 .cursorignore 文件本身
+.cursorignore
+
+# 忽略常见的构建和依赖目录
+/target/
+/node_modules/
+
+# 忽略常见的临时文件和日志
+*.log
+*.tmp
+*.temp
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略编辑器和IDE生成的文件和目录
+.vscode/
+.idea/
+*.swp
+*~
+
+# 忽略编译生成的文件
+*.o
+*.pyc
+*.class
+
+# 忽略敏感信息文件
+*.env
+*.key
+*.pem
+
+# 忽略大型数据文件
+*.csv
+*.json
+*.xml
+
+# 忽略备份文件
+*.bak
+*.backup
