@@ -11,10 +11,13 @@ alloy = { version = "0.2.0", features = ["full"] }
 anyhow = { workspace = true }
 chrono = "0.4.38"
 crossbeam-channel = "0.5.13"
+dotenv = "0.15.0"
+futures = "0.3.31"
 hkdf = "0.12.4"
 mini-redis = "0.4.1"
 num = "0.4.1"
 oneshot = { version = "0.1.8", features = ["async"] }
+ractor = { version = "0.13.0", features = ["async-trait"] }
 rand = "0.8.5"
 rand_core = "0.5.1"
 regex = "1.10.5"
@@ -22,9 +25,10 @@ reqwest = { workspace = true }
 ristretto255-dh = "0.3.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serenity = "0.12.2"
 server = { version = "0.1.0", path = "../server" }
 sha2 = "0.10.8"
-tokio = { version = "1", features = ["sync"] }
+tokio = { version = "1.41.0", features = ["full"] }
 tracing = '0.1.40'
 tracing-subscriber = "0.3.18"
 

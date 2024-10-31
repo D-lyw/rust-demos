@@ -6,7 +6,7 @@ pub mod thread;
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::fs::File;
-use std::io;
+use std::{env, io};
 use std::io::{BufRead, BufReader};
 use std::ops::{Add, Range};
 use std::time::{Duration, Instant};
@@ -76,15 +76,18 @@ fn main() {
     // read_file();
     // println!("{}", print_min_width());
 
-    arrays_slices();
+    // arrays_slices();
 
-    vector_usage();
-    macro_usage();
-    // enum_usage();
-    string_num_convert();
+    // vector_usage();
+    // macro_usage();
+    // // enum_usage();
+    // string_num_convert();
 
-    // show_name("Server Lib show name function".to_string());
-    ownership_move();
+    // // show_name("Server Lib show name function".to_string());
+    // ownership_move();
+
+    let discord_token = env::var("DISCORD_TOKEN").expect("token kkkkk");
+    println!("{}", discord_token);
 }
 
 fn read_file() {
