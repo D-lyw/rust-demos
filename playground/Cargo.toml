@@ -16,6 +16,7 @@ dashmap = "6.1.0"
 dotenv = "0.15.0"
 futures = "0.3.31"
 hkdf = "0.12.4"
+lettre = "0.11.10"
 mini-redis = "0.4.1"
 num = "0.4.1"
 oneshot = { version = "0.1.8", features = ["async"] }
