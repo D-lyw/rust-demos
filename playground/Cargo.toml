@@ -23,6 +23,7 @@ oneshot = { version = "0.1.8", features = ["async"] }
 ractor = { version = "0.13.0", features = ["async-trait"] }
 rand = "0.8.5"
 rand_core = "0.5.1"
+redis = { version = "0.27.5", features = ["aio", "tokio-comp"] }
 regex = "1.10.5"
 reqwest = { workspace = true }
 ristretto255-dh = "0.3.0"
