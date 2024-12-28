@@ -15,7 +15,7 @@ members = [
     "wasm/wasm-pack-learn",
     "playground",
     "project/repl",
-    "blockchain/blockchain-rust", "blockchain/ckb-example",
+    "blockchain/blockchain-rust", "blockchain/ckb-example", "project/totp",
 ]
 resolver = "2"
 

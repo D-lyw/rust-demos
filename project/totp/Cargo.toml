@@ -1,0 +1,8 @@
+[package]
+name = "totp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+totp-rs = "5.6.0"
+anyhow = { workspace = true }
