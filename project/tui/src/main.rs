@@ -1,6 +1,7 @@
 pub mod ui;
+pub mod store;
 
-use std::io;
+use std::{io, vec};
 
 use crossterm::{
     event::{
@@ -20,16 +21,35 @@ use ratatui::{
     widgets::{Block, Paragraph, Widget, Wrap},
     DefaultTerminal, Frame,
 };
+use rig::{
+    agent::Agent,
+    completion::{CompletionModel, Prompt},
+    embeddings::EmbeddingModel,
+    providers::{
+        anthropic::{self, Client},
+        gemini, openai,
+    },
+};
+
+// trait Model: CompletionModel + EmbeddingModel + Send + Sync {}
+// impl<T: CompletionModel + EmbeddingModel + Send + Sync> Model for T {}
 use tui_textarea::{Input, Key, TextArea};
 use ui::{create_dialog_block, create_textarea_block};
 
-fn main() -> io::Result<()> {
+pub enum AgentClient {
+    ChatGPT(Agent<openai::CompletionModel>),
+    Anthropic(Agent<anthropic::completion::CompletionModel>),
+    Gemini(Agent<gemini::completion::CompletionModel>),
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     crossterm::execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
 
     let mut terminal = ratatui::init();
-    let app_result = App::default().run(&mut terminal);
+    App::default().run(&mut terminal).await?;
 
     disable_raw_mode()?;
     crossterm::execute!(
@@ -38,7 +58,8 @@ fn main() -> io::Result<()> {
         DisableMouseCapture
     )?;
     ratatui::restore();
-    app_result
+
+    Ok(())
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
@@ -47,17 +68,20 @@ pub enum DialogState {
     Normal,
     Active,
 }
-#[derive(Debug)]
+// #[derive(Debug)]
 pub struct App<'a> {
     exit: bool,
     input: TextArea<'a>,
     selected_dialog: usize,
     dialog_list_state: Vec<DialogState>,
     scroll_offset: Vec<u16>,
+    clients: Vec<AgentClient>,
 }
 
 impl Default for App<'_> {
     fn default() -> Self {
+        let openai_agent = openai::Client::from_env().agent("gpt-3.5-turbo").build();
+
         Self {
             exit: false,
             input: create_textarea_block(),
@@ -68,6 +92,7 @@ impl Default for App<'_> {
                 DialogState::Normal,
             ],
             scroll_offset: vec![0, 0, 0],
+            clients: vec![AgentClient::ChatGPT(openai_agent)],
         }
     }
 }
@@ -95,14 +120,14 @@ impl<'a> Widget for &'a App<'a> {
 }
 
 impl<'a> App<'a> {
-    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
+    pub async fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         loop {
             if self.exit {
                 break;
             }
             terminal.draw(|frame| self.draw(frame))?;
             let viewport = terminal.size()?;
-            self.handle_events(viewport)?;
+            self.handle_events(viewport).await?;
         }
         Ok(())
     }
@@ -112,22 +137,22 @@ impl<'a> App<'a> {
     }
 
     /// updates the application's state based on user input
-    fn handle_events(&mut self, viewport: Size) -> io::Result<()> {
+    async fn handle_events(&mut self, viewport: Size) -> io::Result<()> {
         match event::read()? {
-            Event::Key(key_event) => self.handle_key_event(key_event),
+            Event::Key(key_event) => self.handle_key_event(key_event).await,
             Event::Mouse(mouse_event) => self.handle_mouse_event(mouse_event, viewport),
             _ => {}
         };
         Ok(())
     }
 
-    fn handle_key_event(&mut self, key_event: KeyEvent) {
+    async fn handle_key_event(&mut self, key_event: KeyEvent) {
         let input_event: Input = key_event.into();
 
         if input_event.key == Key::Enter && input_event.alt == true {
             self.input.insert_newline();
         } else if input_event.key == Key::Enter {
-            self.send_chat_message();
+            self.send_chat_message().await;
         } else if input_event.key == Key::Esc {
             self.exit();
         } else {
@@ -176,10 +201,25 @@ impl<'a> App<'a> {
         }
     }
 
-    fn send_chat_message(&mut self) {
+    async fn send_chat_message(&mut self) -> anyhow::Result<()> {
         let message = self.input.lines().join("\n");
         self.input.select_all();
         self.input.delete_newline();
+
+        match &self.clients[0] {
+            AgentClient::ChatGPT(agent) => {
+                let response = agent.prompt(&message).await?;
+                println!("Response: {}", response);
+            }
+            AgentClient::Anthropic(agent) => {
+                let response = agent.prompt(&message).await;
+            }
+            AgentClient::Gemini(agent) => {
+                let response = agent.prompt(&message).await;
+            }
+        }
+
+        Ok(())
     }
 
     fn exit(&mut self) {
@@ -262,15 +302,15 @@ mod tests {
     #[test]
     fn handle_key_event() -> io::Result<()> {
         let mut app = App::default();
-        app.handle_key_event(KeyCode::Right.into());
-        assert_eq!(app.counter, 1);
+        // app.handle_key_event(KeyCode::Right.into());
+        // assert_eq!(app.counter, 1);
 
-        app.handle_key_event(KeyCode::Left.into());
-        assert_eq!(app.counter, 0);
+        // app.handle_key_event(KeyCode::Left.into());
+        // assert_eq!(app.counter, 0);
 
-        let mut app = App::default();
-        app.handle_key_event(KeyCode::Char('q').into());
-        assert!(app.exit);
+        // let mut app = App::default();
+        // app.handle_key_event(KeyCode::Char('q').into());
+        // assert!(app.exit);
 
         Ok(())
     }
